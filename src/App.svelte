@@ -58,7 +58,7 @@
         }
   }
 
-  fetch(`http://localhost:5600/api/0/buckets/${watcher}/events`).then(r => r.json()).then(data => {
+  fetch(`http://localhost:5600/api/0/buckets/${watcher}/events?end=${end}&start=${start}`).then(r => r.json()).then(data => {
     for (let event of data) {
       let site_exists = false;
       for (const site of sites) {
