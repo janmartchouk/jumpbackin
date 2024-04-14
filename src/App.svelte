@@ -1,4 +1,6 @@
 <script>
+    import { get } from "svelte/store";
+
   let today = new Date();
   let yesterday = new Date().setDate(today.getDate() - 1);
   let startOfDay = 'a';
@@ -15,7 +17,8 @@
     localStorage.content = JSON.stringify({
       pins: [],
       threshold: 5,
-      watcher: 'aw-watcher-web-firefox'
+      watcher: 'aw-watcher-web-firefox',
+      searchurl: 'https://duckduckgo.com/?q='
     });
   }
 
@@ -31,9 +34,11 @@
 
   let threshold = getFromLSC('threshold');
   let watcher = getFromLSC('watcher');
+  let searchurl = getFromLSC('searchurl');
 
   $: writeToLSC('threshold', threshold);
   $: writeToLSC('watcher', watcher);
+  $: writeToLSC('searchurl', searchurl);
 
   let display_settings = false;
   $: display_settings_css = display_settings ? 'flex' : 'none';
@@ -102,7 +107,15 @@
     }
     sites = sites.sort((a, b) => b.pinned - a.pinned);
   }
-</script>
+
+  let destination = '';
+  function handle_enter(e) {
+    if(e.key !='Enter') {return;}
+    e.preventDefault();
+    e.stopPropagation();
+    window.location.replace(`${searchurl}${destination}`);
+  }
+  </script>
 
 <main>
     <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -119,6 +132,10 @@
           <label for='watcher'>Watcher: </label>
           <input type='text' id='watcher' bind:value={watcher}/>
         </group>
+        <group>
+          <label for='searchurl'>Search URL: </label>
+          <input type='text' id='searchurl' bind:value={searchurl}/>
+        </group>
       </div>
     </div>
   <div class="content">
@@ -127,6 +144,7 @@
     <span class="settings-button" on:click={() => {display_settings = !display_settings}}>
       <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 0 16 16" width="16px"><path d="m 7.5 1.019531 c -0.550781 0 -0.996094 0.445313 -0.996094 0.996094 v 0.453125 c -0.472656 0.128906 -0.929687 0.320312 -1.355468 0.566406 l -0.324219 -0.324218 c -0.390625 -0.390626 -1.019531 -0.390626 -1.410157 0 l -0.703124 0.707031 c -0.390626 0.390625 -0.390626 1.019531 0 1.410156 l 0.320312 0.320313 c -0.246094 0.425781 -0.433594 0.882812 -0.5625 1.355468 h -0.453125 c -0.550781 0 -0.996094 0.445313 -0.996094 0.996094 v 1 c 0 0.550781 0.445313 0.996094 0.996094 0.996094 h 0.449219 c 0.132812 0.472656 0.320312 0.929687 0.566406 1.355468 l -0.320312 0.320313 c -0.390626 0.390625 -0.390626 1.019531 0 1.410156 l 0.703124 0.707031 c 0.390626 0.390626 1.019532 0.390626 1.410157 0 l 0.320312 -0.320312 c 0.429688 0.242188 0.882813 0.433594 1.359375 0.558594 v 0.457031 c 0 0.550781 0.445313 0.996094 0.996094 0.996094 h 0.996094 c 0.554687 0 1 -0.445313 1 -0.996094 v -0.453125 c 0.472656 -0.128906 0.929687 -0.320312 1.355468 -0.566406 l 0.320313 0.324218 c 0.390625 0.390626 1.019531 0.390626 1.410156 0 l 0.707031 -0.707031 c 0.390626 -0.390625 0.390626 -1.019531 0 -1.410156 l -0.320312 -0.320313 c 0.242188 -0.425781 0.433594 -0.882812 0.558594 -1.355468 h 0.453125 c 0.554687 0 1 -0.445313 1 -0.996094 v -1 c 0 -0.550781 -0.445313 -0.996094 -1 -0.996094 h -0.449219 c -0.128906 -0.472656 -0.320312 -0.929687 -0.566406 -1.355468 l 0.324218 -0.320313 c 0.390626 -0.390625 0.390626 -1.019531 0 -1.410156 l -0.707031 -0.707031 c -0.390625 -0.390626 -1.019531 -0.390626 -1.410156 0 l -0.320313 0.320312 c -0.425781 -0.242188 -0.882812 -0.429688 -1.355468 -0.558594 v -0.457031 c 0 -0.550781 -0.445313 -0.996094 -1 -0.996094 z m 0.515625 3.976563 c 1.660156 0 3 1.34375 3 3 s -1.339844 3 -3 3 c -1.65625 0 -3 -1.34375 -3 -3 s 1.34375 -3 3 -3 z m 0 0" fill="#222222"/></svg>
     </span>
+    <input placeholder='Search' id='searchbox' autofocus type='text' bind:value={destination} on:keydown={(e) => handle_enter(e)}/>
     <h1>Jump back in</h1>
     <h2 id='info'>Left-click to open, right-click to pin.</h2>
     <div class="sites">

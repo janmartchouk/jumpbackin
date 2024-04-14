@@ -50,8 +50,18 @@ main {
 
 h1 {
   font-size: 4rem;
-  margin-top: 10rem;
   color: var(--primary-color);
+}
+
+#searchbox {
+  width: 50rem;
+  height: 5rem;
+  border: 2px solid var(--border-color);
+  border-radius: 15px;
+  padding: .5rem 1.2rem;
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  margin-top: 11.5rem;
 }
 
 #info {
